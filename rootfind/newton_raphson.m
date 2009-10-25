@@ -23,10 +23,10 @@ function[x_out,varargout] = newton_raphson(x0,f,df,varargin)
 %     set one (or both) of them to 0. Similarly, you can set maxiter to Inf. If
 %     you do all three, this function will never terminate.
 
-global handles;
+global packages;
 inputs = {'maxiter', 'fx_tol', 'x_tol', 'F'};
 defaults = {100, 1e-12, 0, zeros(size(x0))};
-opt = handles.common.input_schema(inputs, defaults, [], varargin{:});
+opt = packages.labtools.input_schema(inputs, defaults, [], varargin{:});
 
 % setup
 x_out = x0;

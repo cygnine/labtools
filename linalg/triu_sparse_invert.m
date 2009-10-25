@@ -11,8 +11,8 @@ function[x] = triu_sparse_invert(s,b,varargin);
 %     TODO: calling input_schema's slow too...make it faster by explicit narg
 %     calculations? And fix enigmatic name?
 
-global handles;
-opt = handles.common.input_schema({'bandwidth'}, {false},[],varargin{:});
+global packages;
+opt = packages.labtools.input_schema({'bandwidth'}, {false},[],varargin{:});
 
 % If bandwidth isn't given, figure it out
 if opt.bandwidth==false

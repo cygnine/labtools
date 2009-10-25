@@ -1,7 +1,7 @@
 % Script to test sparse inversion
 
-global handles;
-la = handles.common.linalg;
+global packages;
+la = packages.labtools.linalg;
 
 N = 20;
 bandwidth = 5;

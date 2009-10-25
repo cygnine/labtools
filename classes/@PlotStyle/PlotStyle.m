@@ -26,8 +26,8 @@ classdef PlotStyle
         self.values = {};
         self.N_properties = 0;
       else
-        global handles;
-        temp = handles.common.input_schema({}, {}, [], varargin{:});
+        global packages;
+        temp = packages.labtools.input_schema({}, {}, [], varargin{:});
         self.props = fieldnames(temp);
         self.N_properties = length(self.props);
         self.values = {};

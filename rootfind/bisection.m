@@ -22,10 +22,10 @@ function[x_out,varargout] = bisection(x0,x1,f,varargin)
 %     set one (or both) of them to 0. Similarly, you can set maxiter to Inf. If
 %     you do all three, this function will never terminate.
 
-global handles;
+global packages;
 inputs = {'maxiter', 'fx_tol', 'x_tol', 'F'};
 defaults = {100, 0, 1e-12, zeros(size(x0))};
-opt = handles.common.input_schema(inputs, defaults, [], varargin{:});
+opt = packages.labtools.input_schema(inputs, defaults, [], varargin{:});
 
 % setup
 fx0 = f(x0) - opt.F;
