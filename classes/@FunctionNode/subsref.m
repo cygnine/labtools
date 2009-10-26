@@ -8,7 +8,7 @@ case '()'
   %[varargout{:}] = self.handle(s.subs{:});
   [varargout{1:nargout}] = feval(self.handle, s.subs{:});
 case '.'
-  varargout{1} = self.(s(1).subs);
+  [varargout{1:nargout}] = self.(s(1).subs);
 otherwise 
   error('Unrecognized subscripting of function');
 end

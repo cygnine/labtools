@@ -2,4 +2,9 @@ function[] = disp(obj);
 % disp -- Displays the helpstring for the FunctionNode object.
 %     [] = disp(obj);
 
-fprintf(obj.helpstring);
+presdir = pwd;
+cd(obj.path);
+help(obj.function_name);
+cd(presdir);
+
+% fprintf(obj.helpstring);

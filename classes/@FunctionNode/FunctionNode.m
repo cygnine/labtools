@@ -3,7 +3,7 @@ classdef FunctionNode
 %     obj = FunctionNode()
 %     obj = FunctionNode(handle, function_name, path)
   properties
-    helpstring = ''; % The Matlab help string
+    %helpstring = ''; % The Matlab help string
     path = ''; % String representation of the path where the function is stored
     function_name = '';  % String name of the function
     handle = @false; % Function handle leading to the function
@@ -25,11 +25,11 @@ classdef FunctionNode
         self.function_name = function_name;
         temp = pwd;
         cd(self.path);
-        self.helpstring = help(self.function_name);
+        %self.helpstring = help(self.function_name);
         cd(temp);
       else
         self.path = '';
-        self.helpstring = '';
+        %self.helpstring = '';
         self.function_name = '';
         self.handle = @false;
       end
