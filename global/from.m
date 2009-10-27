@@ -1,7 +1,14 @@
-function[] = from_package_import(package_name,varargin)
-% [] = from_package_import(package_name, {name1, name2, ...})
+function[] = from(package_name,varargin)
+% [] = from(package_name, {name1, name2, ...})
 %
-%     Wordy copy of from.
+%     Adds the function/modules specified in the varargin cell array to the
+%     caller workspace. This function imports pure function handles, not
+%     FunctionNode classes.
+%
+%     If varargin is empty, calls get_package(package).
+%
+%     If varargin{1} == '*', imports ALL the fields of package_name into the
+%     caller workspace. Clearly you should be careful with this.
 
 import_package('labtools');
 global packages;

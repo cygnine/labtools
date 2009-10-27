@@ -1,9 +1,15 @@
 function[varargout] = from_package_import_as(package_name,varargin)
-% from_package_import_as -- Pythonic "from ___ import ___ as" statement in Matlab
+% from_as -- Pythonic "from ___ import ___ as" statement in Matlab
 %
-% [varname1, varname2, ...] = from_package_import_as(package_name, {name1, name2, ...})
+% [varname1, varname2, ...] = from_as(package_name, {name1, name2, ...})
 %
-%     Wordy copy of from_as.
+%     Outputs functions/packages/modules specified in the varargin cell array.
+%     As with from_package_import, this spits out function handles, not
+%     FunctionNode's.
+%
+%     If varargin is empty, throws an error.
+%
+%     If varargin{1} == '*', throws an error.
 
 if nargin==1
   error('You must provide at least two inputs');

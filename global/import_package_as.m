@@ -3,8 +3,7 @@ function[varargout] = import_package_as(varargin)
 %
 % [varname1, varname2, ...] = import_package_as(package_name1, package_name2, ...)
 %
-%     Outputs the packages/modules/files specified by package_name1,
-%     package_name2, etc.
+%     Wordy copy of imp_as.
 
 global packages;
 varargout = cell([nargin 1]);

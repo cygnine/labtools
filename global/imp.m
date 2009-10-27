@@ -1,9 +1,10 @@
-function[] = import_package(varargin)
-% import_package -- Pythonic import of packages in Matlab
+function[] = imp(varargin)
+% imp -- Pythonic import of packages in Matlab
 %
-% [] = import_package(package_name1, package_name2, ...)
+% [] = imp(package_name1, package_name2, ...)
 %
-%     Wordy copy of imp.
+%     Adds all the packages specified to the caller's workspace named with the
+%     name of the package.
 
 global packages;
 dissect = packages.labtools.namestring_dissect;
