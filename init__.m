@@ -3,8 +3,7 @@ function[labtools] = init__()
 %
 % [nodes] = init__()
 
-% labtools is special: if classes aren't added first, FunctionNode isn't defined
-pwd_addpath('classes', 'global');
+pwd_addpath('classes');
 
 labtools = recurse_files;
 

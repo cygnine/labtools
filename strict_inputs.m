@@ -1,13 +1,10 @@
-function[p] = input_schema(varnames,defaults,validators,varargin)
+function[p] = strict_inputs(varnames,defaults,validators,varargin)
 % input_schema -- Sorts `varargin's lists
 %
-% [p] = input_schema(varnames,defaults,validators,{'key','value','key','value'...})
+% [p] = strict_inputs(varnames,defaults,validators,{'key','value','key','value'...})
 %
-%     Similar to Matlab's built-in input parser, except this method is more
-%     built to emulate Python's keyword argument syntax. Optionally, the key-val
-%     input sequence can be replaced by a single struct containing the key-vals.
-%
-%     Returns a struct of key-val pairs.
+%     Identical to input_schema, except that this function discrards any inputs
+%     that aren't listed in varnames.
 
 % If no validators are given, just return true as a validator.
 %if isempty(validators)
@@ -21,13 +18,15 @@ function[p] = input_schema(varnames,defaults,validators,varargin)
 p = struct();
 for n=1:length(varnames);
   p.(varnames{n}) = defaults{n};
-  %p = setfield(p,varnames{n},defaults{n});
 end
 if length(varargin)==0
 elseif (length(varargin)==1) && isa(varargin{1},'struct')
   temp = fieldnames(varargin{1});
   for n=1:length(temp)
-    p = setfield(p,temp{n},getfield(varargin{1},temp{n}));
+    if isfield(p, temp{n})
+      p.(temp{n}) = getfield(varargin{1},temp{n});
+      % p = setfield(p,temp{n},getfield(varargin{1},temp{n}));
+    end
   end
 else
   N = length(varargin);
@@ -36,8 +35,9 @@ else
   end
 
   for n = 1:(N/2)
-    p.(varargin{2*n-1}) = varargin{2*n};
-    %p = setfield(p,varargin{2*n-1},varargin{2*n});
+    if isfield(p, varargin{2*n-1})
+      p.(varargin{2*n-1}) = varargin{2*n};
+    end
   end
 end
 

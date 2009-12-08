@@ -1,4 +1,4 @@
-function[x_out,varargout] = bisection(x0,x1,f,varargin)
+function[x_out,termination_reason] = bisection(x0,x1,f,varargin)
 % [x,termination_reason] = bisection(x0,x1,f,{F=zeros(size(x)),fx_tol=0, x_tol=1e-12, maxiter=100})
 %
 %     Finds the roots of the function (handle) f given initial bounding
@@ -21,6 +21,13 @@ function[x_out,varargout] = bisection(x0,x1,f,varargin)
 %     If you wish to disable the fx_tol and/or x_tol termination requirements,
 %     set one (or both) of them to 0. Similarly, you can set maxiter to Inf. If
 %     you do all three, this function will never terminate.
+%
+%     Possible values for termination_reason:
+%        1:    maxiter reached
+%        2:    abs(fx) < fx_tol
+%        3:    (x1-x0) < x_tol
+%        4:    f(x0) and f(x1) have the same sign
+%        NaN:  Unknown error
 
 global packages;
 inputs = {'maxiter', 'fx_tol', 'x_tol', 'F'};
@@ -33,6 +40,11 @@ fx1 = f(x1) - opt.F;
 %if not(all(sign(fx0).*sign(fx1)<1))
 %  error('You must give me a starting interval containing a simple root');
 %end
+if not(all(sign(fx0).*sign(fx1)<1))
+  termination_reason = 4;
+  x_out = NaN*x0;
+  return
+end
 
 x = (x0+x1)/2;
 fx = f(x) - opt.F;
@@ -98,12 +110,12 @@ end
 
 % output termination flag
 if all(fx_converged)
-  varargout{1} = 2;
+  termination_reason = 2;
 elseif all(x_converged)
-  varargout{1} = 3;
+  termination_reason = 3;
 elseif too_many_iterations
   x_out(to_compute) = x;
-  varargout{1} = 1;
+  termination_reason = 1;
 else
-  varargout{1} = NaN;
+  termination_reason = NaN;
 end

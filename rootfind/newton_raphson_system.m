@@ -1,8 +1,9 @@
-function[x_out,varargout] = newton_raphson(x0,f,df,varargin)
-% [x,termination_reason] = newton_raphson(x0,f,df,{F=zeros(size(x)),fx_tol=1e-12, x_tol=0, maxiter=100})
+function[x_out,varargout] = newton_raphson_system(x0,f,df,varargin)
+% newton_raphson_system -- Solves a nonlinear system of equations
+% [x,termination_reason] = newton_raphson_system(x0,f,df,{F=zeros(size(x)),fx_tol=1e-12, x_tol=0, maxiter=100})
 %
 %     Finds the roots of the function (handle) f given the initial guesses x0
-%     (array). df is the function handle for the derivative. This routine
+%     (array). df is the function handle for the Jacobian matrix. This routine
 %     performs the Newton-Raphson root-finding algorithm until one of the
 %     following three criterion is met:
 %
@@ -14,10 +15,9 @@ function[x_out,varargout] = newton_raphson(x0,f,df,varargin)
 %     The optional output termination_reason is set to 1, 2, or 3 depending on
 %     which of the above criterion terminated the iteration.
 %
-%     To support vector-valued iteration, the optional input F can be specified
-%     so that this function solves for the root of f(x) - F = 0, where F must be
-%     of the same size as x0. I.e., you can solve f(x_1)=F_1, f(x_2)=F_2, etc. in
-%     parallel.
+%     The function handle f should return a vector of size N x 1. In addition,
+%     this should be the size of the initial condition x0 as well. The
+%     derivative function df should return the N x N Jacobian matrix. 
 %
 %     If you wish to disable the fx_tol and/or x_tol termination requirements,
 %     set one (or both) of them to 0. Similarly, you can set maxiter to Inf. If
@@ -38,7 +38,7 @@ x_out = x0;
 x = x0;
 fx = f(x0) - opt.F;
 x_converged = false(size(x));
-fx_converged = abs(fx)<opt.fx_tol;
+fx_converged = norm(fx)<opt.fx_tol;
 to_compute = find(not(fx_converged | x_converged));
 compute = length(to_compute)>0;
 N_iter = 0;
@@ -49,34 +49,38 @@ F = opt.F(to_compute);
 
 % iteration
 while compute
-  delta_x = fx./df(x);
+  delta_x = inv(df(x))*fx;
   x = x - delta_x;
 
   fx = f(x) - F;
 
   N_iter = N_iter + 1;
-  fx_converged = abs(fx)<opt.fx_tol;
+  fx_converged = norm(fx)<opt.fx_tol;
   too_many_iterations = N_iter>=opt.maxiter;
-  x_converged = abs(delta_x./x)<opt.x_tol;
+  x_converged = norm(delta_x./x)<opt.x_tol;
 
-  flags = fx_converged | x_converged;
+  %flags = fx_converged | x_converged;
   % output
-  x_out(to_compute(flags)) = x(flags);
+  %x_out(to_compute(flags)) = x(flags);
   % update
-  x(flags) = [];
-  fx(flags) = [];
-  F(flags) = [];
-  to_compute(flags) = [];
+  %x(flags) = [];
+  %fx(flags) = [];
+  %F(flags) = [];
+  %to_compute(flags) = [];
 
   % matlab convention: any([]) = false
-  compute = any(to_compute) & not(too_many_iterations);
+  if x_converged | fx_converged | too_many_iterations;
+    compute = false;
+  end
 end
 
 % output termination flag
 if fx_converged
   varargout{1} = 2;
+  x_out = x;
 elseif x_converged
   varargout{1} = 3;
+  x_out = x;
 elseif too_many_iterations
   x_out(to_compute) = x;
   varargout{1} = 1;
