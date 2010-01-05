@@ -1,5 +1,6 @@
 function[x_out,varargout] = newton_raphson(x0,f,df,varargin)
-% [x,termination_reason] = newton_raphson(x0,f,df,{F=zeros(size(x)),fx_tol=1e-12, x_tol=0, maxiter=100})
+% [x,termination_reason] =
+% newton_raphson(x0,f,df,{F=zeros(size(x)),fx_tol=1e-12, x_tol=0, maxiter=100, tiptoe=1})
 %
 %     Finds the roots of the function (handle) f given the initial guesses x0
 %     (array). df is the function handle for the derivative. This routine
@@ -13,6 +14,11 @@ function[x_out,varargout] = newton_raphson(x0,f,df,varargin)
 %
 %     The optional output termination_reason is set to 1, 2, or 3 depending on
 %     which of the above criterion terminated the iteration.
+%
+%     The optional input tiptoe is a ratio in (0,1] that determines how big of a
+%     step to take in the Newton direction. I.e. the update is 
+%
+%          x <---- x - tiptoe*f(x)/df(x)
 %
 %     To support vector-valued iteration, the optional input F can be specified
 %     so that this function solves for the root of f(x) - F = 0, where F must be
@@ -28,8 +34,8 @@ if isempty(strict_inputs)
   from labtools import strict_inputs
 end
 
-inputs = {'maxiter', 'fx_tol', 'x_tol', 'F'};
-defaults = {100, 1e-12, 0, zeros(size(x0))};
+inputs = {'maxiter', 'fx_tol', 'x_tol', 'F', 'tiptoe'};
+defaults = {100, 1e-12, 0, zeros(size(x0)), 1};
 
 opt = strict_inputs(inputs, defaults, [], varargin{:});
 
@@ -50,7 +56,7 @@ F = opt.F(to_compute);
 % iteration
 while compute
   delta_x = fx./df(x);
-  x = x - delta_x;
+  x = x - opt.tiptoe*delta_x;
 
   fx = f(x) - F;
 
