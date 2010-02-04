@@ -9,3 +9,5 @@ labtools = recurse_files;
 
 labtools.linalg = matlab_import('linalg');
 labtools.rootfind = matlab_import('rootfind');
+labtools.pgf = matlab_import('pgf');
+labtools.sampling = matlab_import('sampling');
