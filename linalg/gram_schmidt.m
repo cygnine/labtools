@@ -11,9 +11,9 @@ function[q,r] = gram_schmidt(v, varargin)
 %     length-N column vectors v1 and v2, ip(v1, v2) should return the
 %     scalar-valued inner product.
 
-persistent strict_inputs default_ip crop
+persistent strict_inputs default_ip crop spdiag
 if isempty(strict_inputs)
-  from labtools import strict_inputs crop
+  from labtools import strict_inputs crop spdiag
   default_ip = @(x,y) y'*x;
 end
 
@@ -21,42 +21,28 @@ opt = strict_inputs({'ip'}, {default_ip}, [], varargin{:});
 ip = opt.ip;
 
 [m,n] = size(v);
+mn = max([m,n]);
 
 % Allocation
 q = v;
 if m>n
   q = [q rand([m, m-n])];
 end
-r = crop(eye(max([m,n])), [m,n]);
+r = eye(mn);
 
-for p = 1:n
-  % Unfortunately, I don't know how to do this in a vectorized manner:
-  for pp = 1:min((p-1), m)
-    proj = ip(q(:,p), q(:,pp));
-    q(:,p) = q(:,p) - proj*q(:,pp);
-    r(pp,p) = proj;
-  end
-  
+for p = 1:mn
+  % Normalize the next vector
   mag = ip(q(:,p), q(:,p));
   q(:,p) = 1/sqrt(mag)*q(:,p);
-  if p <= m
-    r(p,:) = sqrt(mag)*r(p,:);
-  end
+  r(p,:) = sqrt(mag)*r(p,:);
+
+  % Project out components on this normalized vector
+  inds = (p+1):mn;
+  proj = ip(q(:,inds), q(:,p));
+  r(p,inds) = proj.';
+  q(:,inds) = q(:,inds) - repmat(q(:,p), [1 length(inds)])*spdiag(proj);
 end
 
-% Now the remaining columns of q aren't orthonormal. Orthonormalize them without
-% touching r:
-if m>n
-  for p = (n+1):m
-    for pp = 1:(p-1)
-      proj = ip(q(:,p), q(:,pp));
-      q(:,p) = q(:,p) - proj*q(:,pp);
-    end
-
-    mag = ip(q(:,p), q(:,p));
-    q(:,p) = 1/sqrt(mag)*q(:,p);
-  end
-end
-
-% And truncate q:
+% And truncate q, r:
 q = q(:,1:m);
+r = crop(r, [m,n]);
