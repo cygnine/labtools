@@ -3,12 +3,12 @@ function[q,r] = gram_schmidt(v, varargin)
 %
 % [q,r] = gram_schmidt(v, [ip=[]])
 %
-%     Performs the (modified) Gram-Schdmit orthogonalization process on the N x
-%     P matrix v. The columns are orthogonalized with respect to some inner
-%     product and returned in the N x N matrix q. The default inner product is
+%     Performs the (modified) Gram-Schdmit orthogonalization process on the M x
+%     N matrix v. The columns are orthogonalized with respect to some inner
+%     product and returned in the M x M matrix q. The default inner product is
 %     the Euclidean inner product. The user may specify an inner product by
 %     setting the optional input "ip" to a function handle. Then for two
-%     length-N column vectors v1 and v2, ip(v1, v2) should return the
+%     length-M column vectors v1 and v2, ip(v1, v2) should return the
 %     scalar-valued inner product.
 
 persistent strict_inputs default_ip crop spdiag

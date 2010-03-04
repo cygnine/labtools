@@ -20,14 +20,15 @@ function[q,r] = mqr(v, varargin)
 %
 %     No error checking of any kind is performed at this stage.
 
-persisent gram_schmidt givens househoulder strict_inputs
+persistent gram_schmidt givens househoulder strict_inputs default_ip
 if isempty(ip)
   from labtools.linalg import gram_schmidt
-  from labtools.linalg import givens householder
+  %from labtools.linalg import givens householder
   from labtools import strict_inputs
+
+  default_ip = @(x,y) y'*x;  % The Euclidean inner product
 end
 
-default_ip = @(x,y) y'*x;  % The Euclidean inner product
 opt = strict_inputs({'method', 'ip'}, {'mgs', default_ip}, [], varargin{:});
 
 switch method
