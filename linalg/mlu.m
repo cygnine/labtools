@@ -1,7 +1,7 @@
 function[l,a,p] = mlu(a, varargin)
 % mlu -- A user-written LU factorization routine with partial pivoting
 %
-% [l,u,[p]] = mlu(a, [pivot=true])
+% [l,u,p] = mlu(a, [pivot=true])
 %
 %     Performs the LU decomposition using the Dolittle algorithm. Partial
 %     pivoting is performed when the optional input "pivot" is true. The output

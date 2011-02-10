@@ -1,10 +1,10 @@
 function[samples] = sample_linear_density_samples(domain,values, N_samples, interval)
 % sample_linear_density_samples -- Samples from a density function
 %
-% samples = sample_linear_density_samples(domain, values, interval)
+% samples = sample_linear_density_samples(domain, values, N, interval)
 %
 %     Given pointwise samples of a positive function (domain, values), this
-%     takes samples assuming that the underlying function represents desired
+%     takes N samples assuming that the underlying function represents desired
 %     density values. The function is linearly interpolated and
 %     integrated to form a full function. 
 

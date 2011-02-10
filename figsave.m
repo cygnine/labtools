@@ -5,6 +5,8 @@ function[] = figsave(handles,titles,directory);
 % handles is a numeric array, titles is a cell array, and
 % directory is a string.
 %
+% By default, the width is scaled to 4 inches.
+%
 % acn
 
 if directory(end)~='/';
@@ -13,11 +15,17 @@ end
 
 for q = 1:length(handles);
   saveas(handles(q), [directory titles{q}], 'fig');
+
+  figure(handles(q));
+  temp = axis;
+  figsize = [temp(2) - temp(1), temp(4) - temp(3)];
+  figsize = figsize/figsize(1)*4;
+
   set(handles(q), 'PaperPositionMode', 'manual');
   set(handles(q), 'Units', 'inches');
   set(handles(q), 'PaperUnits', 'inches');
-  set(handles(q), 'PaperPosition', [0,0,11, 8]);
-  set(handles(q), 'PaperSize', [11 8]);
+  set(handles(q), 'PaperSize',figsize);
+  set(handles(q), 'PaperPosition', [0,0, figsize]);
   saveas(handles(q), [directory titles{q}], 'pdf');
   saveas(handles(q), [directory titles{q}], 'epsc');
   saveas(handles(q), [directory titles{q}], 'jpg');
