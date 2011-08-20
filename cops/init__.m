@@ -5,5 +5,8 @@ function[cops] = init__()
 % [nodes] = init__()
 
 module_list = {'moebius'};
+%cops = recurse_files(pwd, module_list);
 
-cops = recurse_files(pwd, module_list);
+cops.module_list = module_list;
+cops.recurse_files = true;
+cops.addpaths = {};

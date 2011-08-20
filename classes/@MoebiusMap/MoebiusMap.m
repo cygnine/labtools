@@ -1,25 +1,25 @@
 classdef MoebiusMap
-
+% MoebiusMap -- Moebius maps on the complex plane
+%
+% M = MoebiusMap(z, w)
+%     Returns the Moebius map M connecting the length-3 vectors z and w so that
+%     w = M(z). All elements in z (as well as w) must be distinct. Values of Inf
+%     are allowed.
+%
+% M = MoebiusMap(H)
+%     Returns the Moebius map M that is defined by the 2 x 2 matrix H such that
+%
+%               H(1,1)*z + H(1,2)
+%       M(z) =  -----------------
+%               H(2,1)*z + H(2,2)
+ 
   properties(SetAccess=protected)
     H
   end
 
   methods 
     function self = MoebiusMap(varargin)
-    % MoebiusMap -- Moebius maps on the complex plane
-    %
-    % M = MoebiusMap(z, w)
-    %     Returns the Moebius map M connecting the length-3 vectors z and w so that
-    %     w = M(z). All elements in z (as well as w) must be distinct. Values of Inf
-    %     are allowed.
-    %
-    % M = MoebiusMap(H)
-    %     Returns the Moebius map M that is defined by the 2 x 2 matrix H such that
-    %
-    %               H(1,1)*z + H(1,2)
-    %       M(z) =  -----------------
-    %               H(2,1)*z + H(2,2)
-      
+ 
       self.H = zeros(2);
       if nargin==1
         assert(all(size(varargin{1})==[2,2]), ...
@@ -37,7 +37,7 @@ classdef MoebiusMap
 
     end
 
-    M = inv(self);
+    varargout = inv(self,varargin);
     M = compose(self, other)
     w = evaluate(self, z)
     M = subsref(self,z)

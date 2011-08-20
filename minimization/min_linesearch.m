@@ -1,4 +1,4 @@
-function[eps] = min_linesearch(v, w, obj, epsmax);
+function[eps, varargout] = min_linesearch(v, w, obj, epsmax);
 % min_linesearch -- Minimizing linesearch algorithm
 %
 % eps = min_linesearch(v, w, obj, epsmax)
@@ -7,6 +7,8 @@ function[eps] = min_linesearch(v, w, obj, epsmax);
 %     eps*w) minimizes the objective function given by the handle obj. The
 %     search is a global bisection approach over the interval eps \in [0,
 %     epsmax].
+
+naout = nargout - 1;
 
 % Golden ratio
 gr = 1/2*(1+sqrt(5));
@@ -23,7 +25,7 @@ v_right = v + eps_right*w;
 %theta_right = thetas_from_v(v_right);
 
 int_length = epsmax;
-tol_length = 1e-3;
+tol_length = 1e-2;
 min_length = 0;
 
 eps_midleft = eps_right - 1/gr*int_length;
@@ -36,32 +38,41 @@ obj_midleft = 0;
 obj_right = 0;
 obj_midright = 0;
 
-obj_left = obj(v_left);
+nout_left = cell([naout-1 1]);
+nout_midleft = cell([naout-1 1]);
+nout_midright = cell([naout-1 1]);
+
+[obj_left, nout_left{1:naout-1}] = obj(v_left);
 obj_right = obj(v_right);
-obj_midright = obj(v_midright);
-obj_midleft = obj(v_midleft);
+[obj_midright, nout_midright{1:naout-1}] = obj(v_midright);
+[obj_midleft, nout_midleft{1:naout-1}] = obj(v_midleft);
 
 while (int_length/eps_right>tol_length) & (int_length > min_length)
   % Discard one of the two endpoints
   if obj_left > obj_right
     % Discard left:
     [obj_left, eps_left] = deal(obj_midleft, eps_midleft);
+    nout_left = nout_midleft;
+
     int_length = 1/gr*int_length;
     [obj_midleft, eps_midleft] = deal(obj_midright, eps_midright);
+    nout_midleft = nout_midright;
 
     eps_midright = eps_left + 1/gr*int_length;
     v_midright = v + eps_midright*w;
-    obj_midright = obj(v_midright);
+    [obj_midright, nout_midright{1:naout-1}] = obj(v_midright);
 
   else
     % Discard right:
     [obj_right, eps_right] = deal(obj_midright, eps_midright);
+
     int_length = 1/gr*int_length;
     [obj_midright, eps_midright] = deal(obj_midleft, eps_midleft);
+    nout_midright = nout_midleft;
 
     eps_midleft = eps_right - 1/gr*int_length;
     v_midleft = v + eps_midleft*w;
-    obj_midleft = obj(v_midleft);
+    [obj_midleft, nout_midleft{1:naout-1}] = obj(v_midleft);
   end
 
   % For debugging:
@@ -70,3 +81,5 @@ while (int_length/eps_right>tol_length) & (int_length > min_length)
 end
 
 eps = eps_left;
+varargout{1} = obj_left;
+[varargout{2:naout}] = nout_left{:};

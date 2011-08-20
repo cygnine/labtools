@@ -3,6 +3,8 @@ function[minimization] = init__()
 %
 % [nodes] = init__()
 
-%pwd_addpath('classes');
+%minimization = recurse_files(pwd);
 
-minimization = recurse_files(pwd);
+minimization.module_list = {};
+minimization.recurse_files = true;
+minimization.addpaths = {};
