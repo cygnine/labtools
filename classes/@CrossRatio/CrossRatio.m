@@ -31,5 +31,6 @@ classdef CrossRatio < SimpleSingleton
   methods
     cr = evaluate(self, varargin)
     cr = jacobian(self, varargin)
+    cr = subsref(self,varargin)
   end
 end

@@ -12,7 +12,7 @@ function[J] = jacobian(self, z1, z2, z3, z4)
 %     Assumes that the array z has one dimension of size-4 and uses that to
 %     parse z1, z2, z3, and z4 as above.
 
-if nargin == 1
+if nargin == 2
   % called as cross_ratio_gradient(z)
   [M,N] = size(z1);
   if M==4
@@ -22,7 +22,7 @@ if nargin == 1
   else
     error('The input matrix z must have one dimension of size 4');
   end
-elseif nargin == 4
+elseif nargin == 5
   N = numel(z1);
   J = zeros([N 4]);
   z12 = z1 - z2;
