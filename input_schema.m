@@ -17,6 +17,8 @@ function[p] = input_schema(varnames,defaults,validators,varargin)
 %  end
 %end
 
+warning('labtools.input_schema will be deprecated in the future\n')
+
 %%%% Don't use inputParser for Octave compatibility
 p = struct();
 for n=1:length(varnames);

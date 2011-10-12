@@ -14,6 +14,8 @@ function[p] = strict_inputs(varnames,defaults,validators,varargin)
 %  end
 %end
 
+warning('labtools.strict_inputs will be deprecated in the future\n')
+
 %%%% Don't use inputParser for Octave compatibility
 p = struct();
 for n=1:length(varnames);
