@@ -11,19 +11,14 @@ function[cg_state] = nonlinear_cg_state_initialization(varargin)
 %       3.) the 2-norm of the update stepsize falls below updatetol
 %       4.) the relative objective function improvement falls below objtol
 
-persistent strict_inputs
-if isempty(strict_inputs)
-  from labtools import strict_inputs
-end
+persistent input_parser parser
+persistent pr_parser gdp_parser
+if isempty(parser)
+  from labtools import input_parser
+  [temp, parser] = input_parser({'method'}, {'pr'}, [], varargin{:});
 
-% First determine method
-temp = strict_inputs({'method'}, {'pr'}, [], varargin{:});
-
-divline = '--------------------------------------------------------------------------------\n';
-
-switch temp.method
-case 'pr'
-   inputs = {'maxiter', ...
+  %%%%%%%%%%%% Inputs for PR method
+  inputs = {'maxiter', ...
              'gradtol', ...
              'updatetol', ...
              'objtol', ...
@@ -40,21 +35,10 @@ case 'pr'
               1, ...            % 'verbosity'
               default_ip, ...  % 'gradient_ip'
               1e-16};           % 'step_min'
-          
-  cg_state = strict_inputs(inputs, defaults, [], varargin{:});
-  cg_state.short_string = ['Iteration # %d, objective value %1.3e'];
-  cg_state.long_string = [divline 'Iteration number: %d \n Objective value: ' ...
-    '%1.6e \n Gradient norm: %1.6e \n Relative stepsize: %1.3e \n Relative objective ' ...
-    'improvement: %1.3e \n' divline];
 
-  current_state = struct('initial_run', true, ...
-                         'iteration_count', 0, ...
-                         'converged', false);
+  [garbage, pr_parser] = input_parser(inputs, defaults, [], varargin{:});
 
-  current_state.objective = Inf;
-  current_state.objective_improvement = Inf;
-  current_state.step_eps = 1;
-case {'gdp','gd'} % p-adic Gradient descent
+  %%%%%%%%%%%% Inputs for GDP method
   inputs = {'maxiter', ...
             'gradtol', ...
             'objtol', ...
@@ -72,7 +56,36 @@ case {'gdp','gd'} % p-adic Gradient descent
               0.50, ...     % 'p'
               5};          % 'increase_period'
 
-  cg_state = strict_inputs(inputs, defaults, [], varargin{:});
+
+  [garbage, gdp_parser] = input_parser(inputs, defaults, [], varargin{:});
+else
+  parser.parse(varargin{:});
+  temp = parser.Results;
+end
+
+divline = '--------------------------------------------------------------------------------\n';
+
+switch temp.method
+case 'pr'
+  pr_parser.parse(varargin{:});
+  cg_state = pr_parser.Results;
+
+  cg_state.short_string = ['Iteration # %d, objective value %1.3e'];
+  cg_state.long_string = [divline 'Iteration number: %d \n Objective value: ' ...
+    '%1.6e \n Gradient norm: %1.6e \n Relative stepsize: %1.3e \n Relative objective ' ...
+    'improvement: %1.3e \n' divline];
+
+  current_state = struct('initial_run', true, ...
+                         'iteration_count', 0, ...
+                         'converged', false);
+
+  current_state.objective = Inf;
+  current_state.objective_improvement = Inf;
+  current_state.step_eps = 1;
+case {'gdp','gd'} % p-adic Gradient descent
+  gdp_parser.parse(varargin{:});
+  cg_state = gdp_parser.Results;
+
   if (cg_state.p <= 0) | (cg_state.p >= 1)
     error('Input ''p'' must be in the interval (0, 1)');
   end
