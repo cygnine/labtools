@@ -29,10 +29,20 @@ function[x_out,termination_reason] = bisection(x0,x1,f,varargin)
 %        4:    f(x0) and f(x1) have the same sign
 %        NaN:  Unknown error
 
-global packages;
-inputs = {'maxiter', 'fx_tol', 'x_tol', 'F'};
-defaults = {100, 0, 1e-12, zeros(size(x0))};
-opt = packages.labtools.input_schema(inputs, defaults, [], varargin{:});
+persistent parser input_parser
+if isempty(parser)
+  from labtools import input_parser
+
+  inputs = {'maxiter', 'fx_tol', 'x_tol', 'F'};
+  defaults = {100, 0, 1e-12, zeros(size(x0))};
+  [opt,parser] = input_parser(inputs, defaults, [], varargin{:});
+else
+  parser.parse(varargin{:});
+  opt = parser.Results;
+end
+
+%global packages;
+%opt = packages.labtools.input_schema(inputs, defaults, [], varargin{:});
 
 % setup
 fx0 = f(x0) - opt.F;
