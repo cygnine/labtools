@@ -153,7 +153,7 @@ case 'gdp'
   [varargout{1:naout}] = obj(z - cg_state.current_state.step_eps*grad);
   cg_state.current_state.increase_count = cg_state.current_state.increase_count + 1;
 
-  while not(isfinite(varargout{1})) || (varargout{1} - cg_state.current_state.objective) >= 0
+  while not(isfinite(varargout{1})) || (varargout{1} - cg_state.current_state.objective) > 0
     cg_state.current_state.step_eps = cg_state.p*cg_state.current_state.step_eps;
     [varargout{1:naout}] = obj(z - cg_state.current_state.step_eps*grad);
     cg_state.current_state.increase_count = 0;
