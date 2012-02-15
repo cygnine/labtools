@@ -9,7 +9,7 @@ function[cg_state] = nonlinear_cg_state_initialization(varargin)
 %       1.) the maximum number of iterations (maxiter) is reached
 %       2.) the 2-norm of the gradient falls below gradtol
 %       3.) the 2-norm of the update stepsize falls below updatetol
-%       4.) the relative objective function improvement falls below objtol
+%       4.) the relative objective function improvement falls below reltol
 
 persistent input_parser parser
 persistent pr_parser gdp_parser
@@ -21,9 +21,10 @@ if isempty(parser)
   inputs = {'maxiter', ...
              'gradtol', ...
              'updatetol', ...
-             'objtol', ...
+             'reltol', ...
              'verbosity', ...
              'gradient_ip', ...
+             'objtol', ...
              'step_min'};
 
   default_ip = @(a,b) a(:).'*b(:);
@@ -31,9 +32,10 @@ if isempty(parser)
   defaults = {1e6, ...          % 'maxiter'
               1e-10, ...        % 'gradtol'
               1e-8, ...         % 'updatetol'
-              1e-8, ...         % 'objtol'
+              1e-8, ...         % 'reltol'
               1, ...            % 'verbosity'
-              default_ip, ...  % 'gradient_ip'
+              default_ip, ...   % 'gradient_ip'
+              eps, ...          % 'objtol'
               1e-16};           % 'step_min'
 
   [garbage, pr_parser] = input_parser(inputs, defaults, [], varargin{:});
@@ -41,20 +43,22 @@ if isempty(parser)
   %%%%%%%%%%%% Inputs for GDP method
   inputs = {'maxiter', ...
             'gradtol', ...
-            'objtol', ...
+            'reltol', ...
             'updatetol', ...
             'verbosity', ...
             'step_min', ...
+            'objtol', ...
             'p', ...
             'increase_period'};
   defaults = {1e6, ...      % 'maxiter'
               1e-10, ...    % 'gradtol'
-              1e-8, ...     % 'objtol'
+              1e-8, ...     % 'reltol'
               1e-8, ...     % 'updatetol'
               1, ...        % 'verbosity'
               1e-16, ...    % 'step_min'
+              1e-8, ...     % 'objtol'
               0.50, ...     % 'p'
-              5};          % 'increase_period'
+              5};           % 'increase_period'
 
 
   [garbage, gdp_parser] = input_parser(inputs, defaults, [], varargin{:});

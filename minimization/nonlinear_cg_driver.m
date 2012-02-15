@@ -7,7 +7,7 @@ function[z,cg_state,varargout] = nonlinear_cg_driver(obj, grad, z, varargin)
 %                                                    maxiter=1e6, 
 %                                                    gradtol=1e-10, 
 %                                                    updatetol=1e-8, 
-%                                                    objtol=0})
+%                                                    reltol=0})
 %
 %     Performs one iteration of a nonlinear cg optimization method. See
 %     labtools.minimization.nonlinear_cg for details on the nonlinear cg options
@@ -86,6 +86,7 @@ case 'pr'
 
   % Find step size to take
   temp = norm(cg_state.current_state.lambdaz(:))/sqrt(numel(cg_state.current_state.lambdaz)); % To normalize gradient
+  temp = 1;
   [cg_state.current_state.step_eps, varargout{1:naout}] = min_linesearch(z, -cg_state.current_state.lambdaz/temp, obj, ...
                           2*cg_state.current_state.step_eps);
  
@@ -93,20 +94,39 @@ case 'pr'
 
   % Update current vector, even if step_eps is miniscule
   z = z - cg_state.current_state.step_eps*cg_state.current_state.lambdaz;
-
-  % Update variables
-  cg_state.current_state.previous_grad = grad;
-  cg_state.current_state.iteration_count = cg_state.current_state.iteration_count + 1;
-  cg_state.current_state.gradnorm = norm(grad(:))/sqrt(numel(grad));
-  cg_state.current_state.stepnorm = norm(cg_state.current_state.lambdaz(:))/sqrt(numel(cg_state.current_state.lambdaz));
   temp = obj(z);
-  cg_state.current_state.objective_improvement = (cg_state.current_state.objective - temp)/temp;
-  cg_state.current_state.objective = temp;
 
-  convergence_exception = false;
+  if temp > cg_state.current_state.objective
+    % Then we're in trouble -- reset cg in hopes that things will be ok
+    if cg_state.current_state.beta ~= 0
+      cg_state.current_state.beta = 0;
+      cg_state.current_state.lambdaz = 0*cg_state.current_state.lambdaz;
+      cg_state.current_state.initial_run = true;
+      convergence_exception = true;
+      if cg_state.verbosity
+        fprintf('CG reset (increase in objective)\n');
+      end
+    else % It seems that the gradient doesn't make things decrease
+      cg_state.current_state.converged = true;
+      cg_state.current_state.objective_improvement = 0;
+      fprintf('Gradient does not decrease objective...terminating\n');
+      return
+    end
+
+  else
+    % Update variables
+    cg_state.current_state.previous_grad = grad;
+    cg_state.current_state.iteration_count = cg_state.current_state.iteration_count + 1;
+    cg_state.current_state.gradnorm = norm(grad(:))/sqrt(numel(grad));
+    cg_state.current_state.stepnorm = norm(cg_state.current_state.lambdaz(:))/sqrt(numel(cg_state.current_state.lambdaz));
+    cg_state.current_state.objective_improvement = (cg_state.current_state.objective - temp)/cg_state.current_state.objective;
+    cg_state.current_state.objective = temp;
+
+    convergence_exception = false;
+  end
   
   if (cg_state.current_state.step_eps < cg_state.step_min) | ...
-     (cg_state.current_state.objective_improvement < cg_state.objtol) | ...
+     (cg_state.current_state.objective_improvement < cg_state.reltol) | ...
      (cg_state.current_state.gradnorm < cg_state.gradtol) | ...
      (cg_state.current_state.step_eps < cg_state.updatetol)
     % If we have a nonzero lambdaz, maybe we should try resetting
@@ -130,7 +150,8 @@ case 'pr'
   end
 
   % convergence tests:
-  if (cg_state.current_state.objective_improvement < cg_state.objtol) | ...
+  if (cg_state.current_state.objective_improvement < cg_state.reltol) | ...
+     (cg_state.current_state.objective < cg_state.objtol) | ...
      (cg_state.current_state.gradnorm < cg_state.gradtol) | ...
      (cg_state.current_state.step_eps < cg_state.updatetol) | ...
      (cg_state.current_state.iteration_count >= cg_state.maxiter);
@@ -162,12 +183,13 @@ case 'gdp'
 
   cg_state.current_state.iteration_count = cg_state.current_state.iteration_count+1;
 
-  cg_state.current_state.objective_improvement = (cg_state.current_state.objective - varargout{1})/varargout{1};
+  cg_state.current_state.objective_improvement = (cg_state.current_state.objective - varargout{1})/cg_state.current_state.objective;
   cg_state.current_state.objective = varargout{1};
   cg_state.current_state.gradnorm = norm(grad(:))/sqrt(numel(grad));
 
   % convergence tests:
-  if (cg_state.current_state.objective_improvement < cg_state.objtol) | ...
+  if (cg_state.current_state.objective_improvement < cg_state.reltol) | ...
+     (cg_state.current_state.objective < cg_state.objtol) | ...
      (cg_state.current_state.gradnorm < cg_state.gradtol) | ...
      (cg_state.current_state.step_eps < cg_state.updatetol)
      (cg_state.current_state.iteration_count >= cg_state.maxiter);

@@ -18,12 +18,14 @@ function[J] = secant_jacobian(f, x, varargin)
 %
 %     is used, where e the perturbation direction.
 
-persistent strict_inputs
-if isempty(strict_inputs)
-  from labtools import strict_inputs
+persistent parser
+if isempty(parser)
+  from labtools import input_parser
+  [opt, parser] = input_parser({'fd_eps'}, {1e-6}, [], varargin{:});
+else
+  parser.parse(varargin{:});
+  opt = parser.Results;
 end
-
-opt = strict_inputs({'fd_eps'}, {1e-6}, [], varargin{:});
 
 fx = f(x);
 M = length(fx(:));
