@@ -204,8 +204,14 @@ if cg_state.verbosity==1
   fprintf(cg_state.short_string, cg_state.current_state.iteration_count, ...
           cg_state.current_state.objective');
 elseif cg_state.verbosity==2
+  if mod(cg_state.current_state.top_string_count, 50)==0
+    fprintf(cg_state.top_string);
+  end
+
   fprintf(cg_state.long_string, cg_state.current_state.iteration_count, ...
           cg_state.current_state.objective, cg_state.current_state.gradnorm, ...
           cg_state.current_state.step_eps/cg_state.current_state.gradnorm, ...
           cg_state.current_state.objective_improvement);
+
+  cg_state.current_state.top_string_count = cg_state.current_state.top_string_count + 1;
 end

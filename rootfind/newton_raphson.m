@@ -29,15 +29,18 @@ function[x_out,varargout] = newton_raphson(x0,f,df,varargin)
 %     set one (or both) of them to 0. Similarly, you can set maxiter to Inf. If
 %     you do all three, this function will never terminate.
 
-persistent strict_inputs
-if isempty(strict_inputs)
-  from labtools import strict_inputs
+persistent input_parser parser
+if isempty(parser)
+  from labtools import input_parser
+
+  inputs = {'maxiter', 'fx_tol', 'x_tol', 'F', 'tiptoe'};
+  defaults = {100, 1e-12, 0, zeros(size(x0)), 1};
+
+  [opt, parser] = input_parser(inputs, defaults, [], varargin{:});
+else
+  parser.parse(varargin{:});
+  opt = parser.Results;
 end
-
-inputs = {'maxiter', 'fx_tol', 'x_tol', 'F', 'tiptoe'};
-defaults = {100, 1e-12, 0, zeros(size(x0)), 1};
-
-opt = strict_inputs(inputs, defaults, [], varargin{:});
 
 % setup
 x_out = x0;

@@ -74,15 +74,21 @@ case 'pr'
   pr_parser.parse(varargin{:});
   cg_state = pr_parser.Results;
 
+  cg_state.headline_string = sprintf('%-20s%-20s%-20s%-20s%-20s\n', 'Iteration #', 'Obj value', 'Grad norm', 'Rel step', 'Rel improve');
+
   cg_state.short_string = ['Iteration # %d, objective value %1.3e'];
-  cg_state.long_string = [divline 'Iteration number: %d \n Objective value: ' ...
-    '%1.6e \n Gradient norm: %1.6e \n Relative stepsize: %1.3e \n Relative objective ' ...
-    'improvement: %1.3e \n' divline];
+  %cg_state.long_string = [divline 'Iteration number: %d \n Objective value: ' ...
+  %  '%1.6e \n Gradient norm: %1.6e \n Relative stepsize: %1.3e \n Relative objective ' ...
+  %  'improvement: %1.3e \n' divline];
+  cg_state.top_string = ['Iteration #     Objective value     Grad norm         Rel stepsize     Rel obj improvement\n'];
+  cg_state.long_string = [' %-15d %-21.6e %-15.6e %-15.3e %10.3e\n'];
+
 
   current_state = struct('initial_run', true, ...
                          'iteration_count', 0, ...
                          'converged', false);
 
+  current_state.top_string_count = 0;
   current_state.objective = Inf;
   current_state.objective_improvement = Inf;
   current_state.step_eps = 1;
@@ -94,10 +100,13 @@ case {'gdp','gd'} % p-adic Gradient descent
     error('Input ''p'' must be in the interval (0, 1)');
   end
   cg_state.short_string = ['Iteration # %d, objective value %1.3e\n'];
-  cg_state.long_string = [divline 'Iteration number: %d \n Objective value: ' ...
-    '%1.6e \n Gradient norm: %1.6e \n Stepsize: %1.3e \n Relative objective ' ...
-    'improvement: %1.3e \n' divline];
+  %cg_state.long_string = [divline 'Iteration number: %d \n Objective value: ' ...
+  %  '%1.6e \n Gradient norm: %1.6e \n Stepsize: %1.3e \n Relative objective ' ...
+  %  'improvement: %1.3e \n' divline];
+  cg_state.top_string = ['Iteration #     Objective value       Grad norm       Rel stepsize     Rel obj improvement\n'];
+  cg_state.long_string = [' %-15d %-21.6e %-15.6e %-15.3e %10.3e\n'];
 
+  current_state.top_string_count = 0;
   current_state.step_eps = 0.1;
   current_state.objective = Inf;
   current_state.increase_count = 0;

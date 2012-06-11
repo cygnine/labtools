@@ -10,8 +10,6 @@ function[results, parser] = input_parser(varnames,defaults,validators,varargin)
 %     The current implementation of this is just a (less-verbose) wrapper of
 %     inputParser. The default for KeepUnmatched is true to prevent errors for
 %     other inputs. 
-%
-%     Returns a struct of key-val pairs.
 
 if (nargin < 3) || isempty(validators)
   validators = cell([length(varnames) 1]);

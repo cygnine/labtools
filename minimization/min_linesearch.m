@@ -25,7 +25,7 @@ v_right = v + eps_right*w;
 %theta_right = thetas_from_v(v_right);
 
 int_length = epsmax;
-tol_length = 1e-2;
+tol_length = 1e-6;
 min_length = 0;
 
 eps_midleft = eps_right - 1/gr*int_length;
