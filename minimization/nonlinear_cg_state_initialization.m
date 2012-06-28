@@ -10,6 +10,7 @@ function[cg_state] = nonlinear_cg_state_initialization(varargin)
 %       2.) the 2-norm of the gradient falls below gradtol
 %       3.) the 2-norm of the update stepsize falls below updatetol
 %       4.) the relative objective function improvement falls below reltol
+%       5.) the objective function falls below objtol
 
 persistent input_parser parser
 persistent pr_parser gdp_parser
@@ -76,7 +77,7 @@ case 'pr'
 
   cg_state.headline_string = sprintf('%-20s%-20s%-20s%-20s%-20s\n', 'Iteration #', 'Obj value', 'Grad norm', 'Rel step', 'Rel improve');
 
-  cg_state.short_string = ['Iteration # %d, objective value %1.3e'];
+  cg_state.short_string = ['Iteration # %d, objective value %1.3e\n'];
   %cg_state.long_string = [divline 'Iteration number: %d \n Objective value: ' ...
   %  '%1.6e \n Gradient norm: %1.6e \n Relative stepsize: %1.3e \n Relative objective ' ...
   %  'improvement: %1.3e \n' divline];
