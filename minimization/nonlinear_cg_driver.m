@@ -119,7 +119,7 @@ case 'pr'
     cg_state.current_state.iteration_count = cg_state.current_state.iteration_count + 1;
     cg_state.current_state.gradnorm = norm(grad(:))/sqrt(numel(grad));
     cg_state.current_state.stepnorm = norm(cg_state.current_state.lambdaz(:))/sqrt(numel(cg_state.current_state.lambdaz));
-    cg_state.current_state.objective_improvement = (cg_state.current_state.objective - temp)/cg_state.current_state.objective;
+    cg_state.current_state.objective_improvement = (cg_state.current_state.objective - temp)/abs(cg_state.current_state.objective);
     cg_state.current_state.objective = temp;
 
     convergence_exception = false;
@@ -183,7 +183,7 @@ case 'gdp'
 
   cg_state.current_state.iteration_count = cg_state.current_state.iteration_count+1;
 
-  cg_state.current_state.objective_improvement = (cg_state.current_state.objective - varargout{1})/cg_state.current_state.objective;
+  cg_state.current_state.objective_improvement = (cg_state.current_state.objective - varargout{1})/abs(cg_state.current_state.objective);
   cg_state.current_state.objective = varargout{1};
   cg_state.current_state.gradnorm = norm(grad(:))/sqrt(numel(grad));
 

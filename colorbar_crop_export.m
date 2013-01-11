@@ -1,5 +1,5 @@
-function[] = crop_export(fhandle, fname, fsize)
-% crop_export -- Crops a figure for export
+function[] = colorbar_crop_export(fhandle, fname, fsize)
+% colorbar_crop_export -- Crops a figure for export
 %
 % crop_export(fhandle, fname, [[ fsize ]])
 %
@@ -9,12 +9,17 @@ function[] = crop_export(fhandle, fname, fsize)
 %     After cropping, the file is saved calling the builtin saveas using the
 %     filename fname, with a paper (image) size of fsize. The input fsize is
 %     optional.
+%
+%     This function allows some space on the right-side of the figure for the colorbar.
 
 figure(fhandle);
 ax_position = get(gca, 'position');
 f_position = get(gcf, 'paperposition');
-set(gca, 'position', [0.005 0.005 0.99 0.99]);
+
+set(gca, 'position', [0.000 0.000 0.99 0.99]);
 if nargin > 2
+  set(fhandle, 'units', 'inches');
+  set(fhandle, 'position', [0 0 fsize]);
   set(fhandle, 'papersize', fsize);
   set(fhandle, 'paperposition', [0 0 fsize]);
 end
